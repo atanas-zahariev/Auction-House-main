@@ -1,0 +1,37 @@
+<!-- Closed Auctions Page -->
+<section id="catalog-section" class="spaced">
+
+    <h1 class="item">Closed Auctions</h1>
+   
+    <div *ngIf="hasLenght then isLength else nolength"></div>
+
+    <ng-template #isLength>
+        <ul class="catalog cards">
+            
+            <li class="item" *ngFor="let item of items">
+                <header class="pad-med">
+                    <h2>{{item.title}}</h2>
+                </header>
+
+                <div class="align-center">
+
+                    <img class="img-thumb" src="{{item.imgUrl}}">
+
+                </div>
+
+                <footer class="align-center pad-med">
+                    <p>Closing price: <strong>${{item.price}}</strong></p>
+                    from {{item.bider?.firstname}} {{item.bider?.lastname}}
+                </footer>
+            </li>
+            
+        </ul>
+    </ng-template>
+
+    <ng-template #nolength>
+        <div class="item pad-large align-center">
+            <p>You haven't closed any auctions yet.</p>
+        </div>
+    </ng-template>
+    
+</section>

@@ -1,0 +1,33 @@
+<section id="catalog-section" class="spaced">
+
+    <h1 class="item">Auctions</h1>
+    <div *ngIf="hasLenght then isItems; else noItems"></div>
+    <ng-template #isItems>
+        <ul class="catalog cards">
+            <li class="item" *ngFor="let item of items">
+                <header class="pad-med">
+                    <h2>{{item.title}}</h2>
+                </header>
+
+                <div class="align-center">
+                    <img class="img-thumb" src={{item.imgUrl}}>
+                </div>
+
+                <footer class="align-center pad-med">
+                    <p>Current price: $<strong>{{item.price}}</strong></p>
+                    <a class="action" [routerLink]="['/action/details',item._id]">See details</a>
+                </footer>
+            </li>
+        </ul>
+    </ng-template>
+
+    <ng-template #noItems>
+        <div class="item pad-large align-center">
+            <p>Nothing has been listed yet. Be the first!</p>
+            <div>
+                <a class="action" routerLink="/create">Publish Auction</a>
+            </div>
+        </div>
+    </ng-template>
+
+</section>

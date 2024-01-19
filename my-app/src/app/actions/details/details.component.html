@@ -1,0 +1,97 @@
+<div *ngIf="isOwner then owner; else notOwner"></div>
+<!-- Details Page -->
+<ng-template #notOwner>
+    <section id="catalog-section">
+
+        <h1 class="item">
+            {{item?.title}}
+        </h1>
+        <div class="item padded">
+
+            <div class="layout right large">
+
+                <div class="col">
+                    <img src={{item?.imgUrl}} class="img-large">
+                </div>
+
+                <div class="content pad-med">
+
+                    <p>In category: <strong>{{item?.category}}</strong></p>
+                    <p>{{item?.description}}</p>
+
+                    <div class="align-center">
+                        <div>
+                            Current price: $<strong>{{item?.price}}</strong>
+                        </div>
+                       
+                        <div *ngIf="user then hasUser"></div>
+                        <ng-template #hasUser>
+                            <div *ngIf="currentHigherOffer">
+                                You are currently the <strong>highest bidder</strong> for this auction
+                            </div>
+                          
+                            <form *ngIf="!currentHigherOffer" [formGroup]="offerForm" (ngSubmit)="onSubmit()">
+                                <label><span>Bid amount</span><input type="number" formControlName="price"></label>
+                                <input class="action" type="submit" value="Place bid">
+                            </form>
+                        </ng-template>                       
+                    </div>
+
+                </div>
+            </div>
+
+            <footer>Listed by {{userFirstName}} </footer>
+        </div>
+
+    </section>
+</ng-template>
+<ng-template #owner>
+    <!-- Details Page - Auction owner -->
+    <section id="catalog-section">
+
+        <h1 class="item">
+            {{item?.title}}
+            <div class="f-right">
+                <a class="action pad-small f-left" routerLink="/action/edit/{{item?._id}}">Edit</a>
+                <a class="action pad-small f-left" routerLink="/action/delete/{{item?._id}}">Delete</a>
+            </div>
+        </h1>
+        <div class="item padded">
+
+            <div class="layout right large">
+
+                <div class="col">
+                    <img src="{{item?.imgUrl}}" class="img-large">
+                </div>
+
+                <div class="content pad-med">
+
+                    <p>In category: <strong>{{item?.category}}</strong></p>
+                    <p>{{item?.description}}</p>
+
+                    <div class="align-center">
+                        <div>
+                            Current price: $<strong>{{item?.price}}</strong>
+                        </div>
+
+                        <div>
+
+                            <div *ngIf="item?.bider then hasBider; else noBider"></div>
+                            <ng-template #hasBider>
+                                Bid by <strong>{{item?.bider?.firstname}}</strong>
+                                <a class="action pad-med cta" routerLink="/action/userAction/{{item?._id}}">Close Auction</a>
+                            </ng-template>
+
+                            <ng-template #noBider>
+                                No bids
+                            </ng-template>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <footer>Listed by {{userFirstName}}</footer>
+        </div>
+
+    </section>
+</ng-template>

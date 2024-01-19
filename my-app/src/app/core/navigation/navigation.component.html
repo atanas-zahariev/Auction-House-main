@@ -1,0 +1,40 @@
+<a routerLink="/home" class="title-logo">
+    <img src="/assets/logo.png">
+    <span>Auction House</span>
+</a>
+<nav class="main-nav nav-mid">
+    <ul>
+        <li>
+            <a routerLink="/item/catalog">Browse</a>
+        </li>
+        <!-- User actions -->
+        <div *ngIf="user then hasUser; else noUser" ></div>
+
+        <ng-template #hasUser>
+
+            <li class="user">
+                <a routerLink="/item/create">Publish</a>
+            </li>
+
+            
+            <li class="user">
+                <a routerLink="/item/closed">Closed Auctions</a>
+            </li>
+             
+
+            <li class="user" >
+                <a routerLink="/auth/logout">Logout</a>
+            </li>
+        </ng-template>
+        <!-- Guest actions -->
+        <ng-template #noUser>
+
+            <li class="guest">
+                <a routerLink="/auth/register">Register</a>
+            </li>
+            <li class="guest">
+                <a routerLink="/auth/login">Login</a>
+            </li>                       
+        </ng-template>
+    </ul>
+</nav>
