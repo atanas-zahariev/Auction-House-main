@@ -8,17 +8,19 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { of } from 'rxjs';
+import { of,throwError } from 'rxjs';
+import { ErrorService } from 'src/app/services/error.service';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
   let authService: jasmine.SpyObj<AuthService>;
   let httpClient: HttpClient
-
+  let errorService: jasmine.SpyObj<ErrorService>;
   beforeEach(() => {
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     const mockAuthService = jasmine.createSpyObj('AuthService', ['register']);
+    const mockErrorService = jasmine.createSpyObj('ErroService', ['getError', 'cleanErrors'])
 
     TestBed.configureTestingModule({
       declarations: [RegisterComponent],
@@ -26,6 +28,7 @@ describe('RegisterComponent', () => {
       providers: [
         { provide: AuthService, useValue: mockAuthService },
         { provide: Router, useValue: routerSpy },
+        { provide: ErrorService, useValue: mockErrorService }
       ],
 
       schemas: [NO_ERRORS_SCHEMA],
@@ -39,6 +42,8 @@ describe('RegisterComponent', () => {
     httpClient = TestBed.inject(HttpClient);
 
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+
+    errorService = TestBed.inject(ErrorService) as jasmine.SpyObj<ErrorService>;
 
     fixture = TestBed.createComponent(RegisterComponent);
     component = fixture.componentInstance;
@@ -135,9 +140,10 @@ describe('RegisterComponent', () => {
     repass.dispatchEvent(new Event('input'));
 
     fixture.detectChanges();
-    form.triggerEventHandler('ngSubmit',null);
+    form.triggerEventHandler('ngSubmit', null);
     fixture.detectChanges()
 
+    expect(errorService.cleanErrors).toHaveBeenCalled()
     expect(authService.register).toHaveBeenCalled()
   })
 
@@ -148,7 +154,7 @@ describe('RegisterComponent', () => {
     const lastName: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[2];
     const password: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[3];
     const repass: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[4];
-    
+
     authService.register.and.returnValue(of(true));
 
     email.value = '';
@@ -164,7 +170,7 @@ describe('RegisterComponent', () => {
     repass.dispatchEvent(new Event('input'));
 
     fixture.detectChanges();
-    form.triggerEventHandler('ngSubmit',null);
+    form.triggerEventHandler('ngSubmit', null);
     fixture.detectChanges()
 
     expect(authService.register).not.toHaveBeenCalled()
@@ -178,7 +184,7 @@ describe('RegisterComponent', () => {
     const password: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[3];
     const repass: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[4];
     const page = new Page()
-    
+
     authService.register.and.returnValue(of(true));
 
     email.value = 'edy@abv.bg';
@@ -194,13 +200,43 @@ describe('RegisterComponent', () => {
     repass.dispatchEvent(new Event('input'));
 
     fixture.detectChanges();
-    form.triggerEventHandler('ngSubmit',null);
+    form.triggerEventHandler('ngSubmit', null);
     fixture.detectChanges()
 
     const navArgs = page.navSpy.calls.first().args[0];
 
+    expect(errorService.cleanErrors).toHaveBeenCalled()
     expect(page.navSpy.calls.any()).withContext('navigate called').toBe(true);
     expect(navArgs[0]).withContext('nav to heroes detail URL').toContain('/');
+  })
+
+  it('should call getErro  when error happens with register', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const email: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[0];
+    const firstName: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[1];
+    const lastName: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[2];
+    const password: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[3];
+    const repass: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[4];
+
+    authService.register.and.returnValue(throwError(() => new Error()));
+
+    email.value = 'edy@abv.bg';
+    firstName.value = 'edy';
+    lastName.value = 'koisi';
+    password.value = '123456';
+    repass.value = '123456';
+
+    email.dispatchEvent(new Event('input'));
+    firstName.dispatchEvent(new Event('input'));
+    lastName.dispatchEvent(new Event('input'));
+    password.dispatchEvent(new Event('input'));
+    repass.dispatchEvent(new Event('input'));
+
+    fixture.detectChanges();
+    form.triggerEventHandler('ngSubmit', null);
+    fixture.detectChanges()
+    
+    expect(errorService.getError).toHaveBeenCalled()
   })
 
   ///Helper
