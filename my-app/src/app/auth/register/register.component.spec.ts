@@ -207,10 +207,10 @@ describe('RegisterComponent', () => {
 
     expect(errorService.cleanErrors).toHaveBeenCalled()
     expect(page.navSpy.calls.any()).withContext('navigate called').toBe(true);
-    expect(navArgs[0]).withContext('nav to heroes detail URL').toContain('/');
+    expect(navArgs[0]).withContext('nav to Home URL').toContain('/');
   })
 
-  it('should call getErro  when error happens with register', () => {
+  it('should call getError  when error happens with register', () => {
     const form = fixture.debugElement.query(By.css('form'))
     const email: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[0];
     const firstName: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[1];

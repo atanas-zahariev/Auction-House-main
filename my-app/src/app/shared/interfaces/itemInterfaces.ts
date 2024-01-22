@@ -6,7 +6,7 @@ export interface itemI {
     owner: string;
     price: number;
     title: string;
-    __v: 0
+    __v: number;
     _id: string;
 }
 
