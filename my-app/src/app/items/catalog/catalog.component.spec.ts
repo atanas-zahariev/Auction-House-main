@@ -1,16 +1,21 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing'
-
-import { CatalogComponent } from './catalog.component';
-import { HttpClient, HttpHandler } from '@angular/common/http';
-import { ItemsService } from 'src/app/services/items.service';
-import { ErrorService } from 'src/app/services/error.service';
-import { of, throwError } from 'rxjs';
-import { By } from '@angular/platform-browser';
-import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
+
+import { HttpClient, HttpHandler } from '@angular/common/http';
+import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { Router, } from '@angular/router';
 import { Location } from '@angular/common';
+import { By } from '@angular/platform-browser';
+
+import { CatalogComponent } from './catalog.component';
+
+import { ItemsService } from 'src/app/services/items.service';
+import { ErrorService } from 'src/app/services/error.service';
+
+import { of, throwError } from 'rxjs';
+// import { provideMockStore } from '@ngrx/store/testing';
+
 
 @Component({
   template: ''
@@ -24,31 +29,36 @@ describe('CatalogComponent', () => {
   let httpClient: HttpClient;
   let itemService: jasmine.SpyObj<ItemsService>;
   let errorService: jasmine.SpyObj<ErrorService>;
-  let router : Router;
+  let router: Router;
   let location: Location;
 
-  beforeEach(() => {
+  beforeEach(waitForAsync(() => {
     const mockItemService = jasmine.createSpyObj('ItemService', ['catalog']);
     const mockErrorService = jasmine.createSpyObj('ErrorService', ['cleanErrors', 'getError']);
 
     TestBed.configureTestingModule({
-      declarations: [CatalogComponent,DummyComponent],
+      declarations: [CatalogComponent, DummyComponent],
 
       providers: [
         { provide: ItemsService, useValue: mockItemService },
-        { provide: ErrorService, useValue: mockErrorService }
+        { provide: ErrorService, useValue: mockErrorService },
+        // provideMockStore({})
       ],
 
       schemas: [NO_ERRORS_SCHEMA],
 
       imports: [
         HttpClientTestingModule,
-        RouterTestingModule,
         RouterTestingModule.withRoutes([
-          { path: 'action/details/:id', component: DummyComponent }
+          { path: 'action/details/:id', component: DummyComponent },
+          { path: 'item/create', component: DummyComponent },
         ])
       ]
-    });
+    }).compileComponents;
+
+  }));
+
+  beforeEach(() => {
 
     httpClient = TestBed.inject(HttpClient);
 
@@ -57,17 +67,16 @@ describe('CatalogComponent', () => {
     errorService = TestBed.inject(ErrorService) as jasmine.SpyObj<ErrorService>;
 
     router = TestBed.inject(Router);
-
+    // router.initialNavigation()
     location = TestBed.inject(Location);
 
     itemService.catalog.and.returnValue(of([]))
-    // if we want to check if getError is called -->
-    //itemService.catalog.and.returnValue(throwError(() => new Error()))
 
     fixture = TestBed.createComponent(CatalogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  })
+
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -89,14 +98,17 @@ describe('CatalogComponent', () => {
     expect(h1.textContent).toEqual('Auctions')
   })
 
-  // if we want to check if getError is called -->
+  it('should call getError', () => {
+    itemService.catalog.and.returnValue(throwError(() => new Error()))
 
-  // it('should call getError', () => {
-  //   itemService.catalog.and.returnValue(throwError(() => new Error()))
-  //   fixture.detectChanges()
-  //   expect(itemService.catalog).toHaveBeenCalled()
-  //   expect(errorService.getError).toHaveBeenCalled()
-  // })
+    fixture = TestBed.createComponent(CatalogComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    fixture.detectChanges()
+    expect(itemService.catalog).toHaveBeenCalled()
+    expect(errorService.getError).toHaveBeenCalled()
+  })
 
   it('should create exact same number of li element like ITEMS', () => {
     const ITEMS = [
@@ -137,7 +149,7 @@ describe('CatalogComponent', () => {
     const img = fixture.nativeElement.querySelectorAll('img')
     const a = fixture.nativeElement.querySelectorAll('a')
     const href = fixture.debugElement.queryAll(By.css('a'))[0].nativeElement.getAttribute('href')
-     
+
     expect(liElements).toBeTruthy()
     expect(liElements.length).toEqual(ITEMS.length)
     expect(headers).toBeTruthy()
@@ -150,11 +162,55 @@ describe('CatalogComponent', () => {
     expect(href).toEqual('/action/details/1')
   })
 
-  it('should go to url', async () => {
-   const page = fixture.debugElement.queryAll(By.css('a'))[0].nativeElement
-   console.log(page);
-   
-   expect(page).toBeTruthy()
-  })
+  it('should go to create page when there are no items', fakeAsync(() => {
+    let links = fixture.debugElement.queryAll(By.css('a'))
+    links[0].nativeElement.click()
+
+    tick()
+    fixture.detectChanges()
+    tick()
+    
+    expect(location.path()).toBe('/item/create')
+  }))
+
+  it('should go to details page when there are items', fakeAsync(() => {
+    const ITEMS = [
+      {
+        bider: null,
+        category: "vehicles",
+        description: 'some motorcycle description',
+        imgUrl: "https://",
+        owner: 'peter',
+        price: 8314,
+        title: "Motorcycle",
+        __v: 0,
+        _id: '1',
+      },
+      {
+        bider: null,
+        category: "other",
+        description: 'some horse description',
+        imgUrl: "https://",
+        owner: 'gosho',
+        price: 8314,
+        title: "Horse",
+        __v: 0,
+        _id: '1',
+      }
+    ]
+
+    component.items = ITEMS;
+    component.hasLenght = true;
+    fixture.detectChanges()
+
+    let links = fixture.debugElement.queryAll(By.css('a'))
+    links[0].nativeElement.click()
+
+    tick()
+    fixture.detectChanges()
+    tick()
+    
+    expect(location.path()).toBe('/action/details/1')
+  }))
 
 });//end

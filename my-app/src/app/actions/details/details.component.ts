@@ -3,7 +3,6 @@ import { ItemsService } from '../../services/items.service';
 import { ActivatedRoute } from '@angular/router';
 import { itemI } from '../../shared/interfaces/itemInterfaces';
 import { FormControl, FormGroup } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
 import { ErrorService } from 'src/app/services/error.service';
 
 @Component({
@@ -29,7 +28,6 @@ export class DetailsComponent {
   constructor(
     private itemService: ItemsService,
     private route: ActivatedRoute,
-    private authService: AuthService,
     private errorService : ErrorService
   ) {
     const id = this.route.snapshot.params['id']
