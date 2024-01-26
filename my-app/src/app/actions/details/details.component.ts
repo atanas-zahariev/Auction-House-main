@@ -28,7 +28,7 @@ export class DetailsComponent {
   constructor(
     private itemService: ItemsService,
     private route: ActivatedRoute,
-    private errorService : ErrorService
+    private errorService:ErrorService
   ) {
     const id = this.route.snapshot.params['id']
 
