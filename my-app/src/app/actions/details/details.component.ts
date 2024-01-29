@@ -66,7 +66,7 @@ export class DetailsComponent {
 
     this.itemService.offer(id, this.offerForm.value).subscribe(
       (data) => {
-        this.currentHigherOffer = data.updatedItem.bider?._id == data.user?._id
+        this.currentHigherOffer = data.updatedItem?.bider?._id == data.user?._id
         this.item = data.updatedItem
         this.errorService.cleanErrors()
       },
