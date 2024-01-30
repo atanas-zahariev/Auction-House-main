@@ -191,7 +191,6 @@ describe('EditComponent', () => {
     fixture.detectChanges();
 
     const navArgs = page.navSpy.calls.first().args[0];
-    console.log(navArgs);
     
     expect(errorService.cleanErrors).toHaveBeenCalled()
     expect(page.navSpy.calls.any()).withContext('navigate called').toBe(true);
