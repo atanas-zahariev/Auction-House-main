@@ -250,6 +250,24 @@ describe('EditComponent', () => {
     expect(itemService.edit).not.toHaveBeenCalled()
   })
 
+  it('should not to call edit when price input field is different from expected', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const price = fixture.nativeElement.querySelectorAll('input')[2]
+
+    const priceValue = '0'
+
+    price.value = priceValue
+    price.dispatchEvent(new Event('input'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+
+    fixture.detectChanges();
+
+    expect(itemService.edit).not.toHaveBeenCalled()
+  })
+
   it('should navigate after form event fire', () => {
     const form = fixture.debugElement.query(By.css('form'))
     const page = new Page()
