@@ -232,6 +232,24 @@ describe('EditComponent', () => {
     expect(itemService.edit).not.toHaveBeenCalled()
   })
 
+  it('should not to call edit when image input field is different from expected', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const img = fixture.nativeElement.querySelectorAll('input')[1]
+
+    const imgValue = 'http//'
+
+    img.value = imgValue
+    img.dispatchEvent(new Event('input'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+
+    fixture.detectChanges();
+
+    expect(itemService.edit).not.toHaveBeenCalled()
+  })
+
   it('should navigate after form event fire', () => {
     const form = fixture.debugElement.query(By.css('form'))
     const page = new Page()
