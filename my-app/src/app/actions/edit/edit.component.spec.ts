@@ -197,6 +197,23 @@ describe('EditComponent', () => {
     expect(itemService.edit).not.toHaveBeenCalled()
   })
 
+  it('should not to call edit when title input field length is loower than 4', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const title = fixture.nativeElement.querySelectorAll('input')[0]
+    const titleValue = 'abv'
+
+    title.value = titleValue
+    title.dispatchEvent(new Event('input'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+
+    fixture.detectChanges();
+
+    expect(itemService.edit).not.toHaveBeenCalled()
+  })
+
   it('should navigate after form event fire', () => {
     const form = fixture.debugElement.query(By.css('form'))
     const page = new Page()
