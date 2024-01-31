@@ -214,6 +214,24 @@ describe('EditComponent', () => {
     expect(itemService.edit).not.toHaveBeenCalled()
   })
 
+  it('should not to call edit when category input field is different from expected', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const category = fixture.nativeElement.querySelector('select')
+
+    const categoryValue = 'different'
+
+    category.value = categoryValue
+    category.dispatchEvent(new Event('change'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+
+    fixture.detectChanges();
+
+    expect(itemService.edit).not.toHaveBeenCalled()
+  })
+
   it('should navigate after form event fire', () => {
     const form = fixture.debugElement.query(By.css('form'))
     const page = new Page()
