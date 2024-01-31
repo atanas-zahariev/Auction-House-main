@@ -10,7 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Location } from '@angular/common';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { By } from '@angular/platform-browser';
 
 describe('EditComponent', () => {
@@ -302,6 +302,20 @@ describe('EditComponent', () => {
     expect(errorService.cleanErrors).toHaveBeenCalled()
     expect(page.navSpy.calls.any()).withContext('navigate called').toBe(true);
     expect(navArgs[0]).withContext('nav to Home URL').toContain('/action/details/1');
+  })
+
+  it('should call getError when error happens with edit', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    itemService.edit.and.returnValue(throwError(() => new Error()))
+
+    fixture.detectChanges();
+
+    form.triggerEventHandler('ngSubmit', null)
+
+    fixture.detectChanges();
+     
+    expect(itemService.edit).toHaveBeenCalledTimes(1)
+    expect(errorService.getError).toHaveBeenCalled()
   })
 
   class Page {
