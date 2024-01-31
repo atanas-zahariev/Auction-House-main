@@ -24,6 +24,18 @@ describe('EditComponent', () => {
   let activatedRoute: ActivatedRoute;
   let id: any
 
+  const ITEM = {
+    bider: null,
+    category: "vehicles",
+    description: 'some motorcycle description',
+    imgUrl: "https://",
+    owner: 'peter',
+    price: 8314,
+    title: "Motorcycle",
+    __v: 0,
+    _id: '1',
+  }
+
   beforeEach(waitForAsync(() => {
     const mockItemService = jasmine.createSpyObj('ItemService', ['details', 'offer', 'edit']);
     const mockErrorService = jasmine.createSpyObj('ErrorService', ['cleanErrors', 'getError']);
@@ -41,7 +53,7 @@ describe('EditComponent', () => {
       providers: [
         { provide: ItemsService, useValue: mockItemService },
         { provide: ErrorService, useValue: mockErrorService },
-        { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 1 } } } },
+        { provide: ActivatedRoute, useValue: { snapshot: { params: { id: ITEM._id } } } },
         { provide: Router, useValue: routerSpy },
       ],
 
@@ -68,17 +80,6 @@ describe('EditComponent', () => {
     fixture = TestBed.createComponent(EditComponent);
     component = fixture.componentInstance;
 
-    const ITEM = {
-      bider: null,
-      category: "vehicles",
-      description: 'some motorcycle description',
-      imgUrl: "https://",
-      owner: 'peter',
-      price: 8314,
-      title: "Motorcycle",
-      __v: 0,
-      _id: '1',
-    }
     component.editItem(ITEM);
     fixture.detectChanges();
   })
@@ -177,6 +178,23 @@ describe('EditComponent', () => {
 
     expect(errorService.cleanErrors).toHaveBeenCalled();
     expect(itemService.edit).toHaveBeenCalled();
+  })
+
+  it('should not to call edit when some input field is empti', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const title = fixture.nativeElement.querySelectorAll('input')[0]
+    const titleValue = ''
+
+    title.value = titleValue
+    title.dispatchEvent(new Event('input'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+
+    fixture.detectChanges();
+
+    expect(itemService.edit).not.toHaveBeenCalled()
   })
 
   it('should navigate after form event fire', () => {
