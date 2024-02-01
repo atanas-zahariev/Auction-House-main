@@ -104,4 +104,13 @@ describe('ItemsService', () => {
     const request = httpTestingController.expectOne(`${url}/details/${id}`)
     expect(request.request.method).toBe('POST')
   })
+
+  it('should close offer', () => {
+    const id = "64c7aa75212a04d09c7f31d4"
+
+    service.closeOffer(id).subscribe()
+
+    const request = httpTestingController.expectOne(`${url}/userAction/${id}`)
+    expect(request.request.method).toBe('GET')
+  })
 });
