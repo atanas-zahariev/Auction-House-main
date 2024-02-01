@@ -11,7 +11,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 @Component({
   template: ''
@@ -236,6 +236,41 @@ describe('CreateComponent', () => {
     expect(errorService.cleanErrors).toHaveBeenCalled()
     expect(page.navSpy.calls.any()).withContext('navigate called').toBe(true);
     expect(navArgs[0]).withContext('nav to Home URL').toContain('/item/catalog');
+  })
+
+  it('should call getError when form event fire', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const htmlDescription = fixture.nativeElement.querySelector('textarea')
+    const htmlPrice = fixture.nativeElement.querySelectorAll('input')[2]
+    const htmlImg = fixture.nativeElement.querySelectorAll('input')[1]
+    const htmlCategory = fixture.nativeElement.querySelector('select')
+    const htmlTitle = fixture.nativeElement.querySelectorAll('input')[0]
+
+    itemService.create.and.returnValue(throwError(() => new Error()))
+    fixture.detectChanges()
+
+    htmlTitle.value = 'Title'
+    htmlTitle.dispatchEvent(new Event('input'))
+
+    htmlCategory.value = 'estate'
+    htmlCategory.dispatchEvent(new Event('change'))
+
+    htmlImg.value = 'https://'
+    htmlImg.dispatchEvent(new Event('input'))
+
+    htmlPrice.value = '26'
+    htmlPrice.dispatchEvent(new Event('input'))
+
+    htmlDescription.value = 'some description'
+    htmlDescription.dispatchEvent(new Event('input'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+    fixture.detectChanges()
+
+    expect(itemService.create).toHaveBeenCalled()
+    expect(errorService.getError).toHaveBeenCalled()
   })
 
   class Page {
