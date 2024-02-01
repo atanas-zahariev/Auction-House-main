@@ -54,7 +54,7 @@ describe('CatalogComponent', () => {
           { path: 'item/create', component: DummyComponent },
         ])
       ]
-    }).compileComponents;
+    }).compileComponents();
 
   }));
 
