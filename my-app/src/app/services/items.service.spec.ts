@@ -158,4 +158,14 @@ describe('ItemsService', () => {
 
     expect(request.request.method).toBe('POST')
   })
+
+  it('should delete existing item', () => {
+    const id = "64c7aa75212a04d09c7f31d4"
+
+    service.delete(id).subscribe()
+
+    const request = httpTestingController.expectOne(`${url}/delete/${id}`)
+
+    expect(request.request.method).toBe('GET')
+  })
 });
