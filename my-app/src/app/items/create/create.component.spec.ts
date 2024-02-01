@@ -10,6 +10,8 @@ import { Location } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ReactiveFormsModule } from '@angular/forms';
+import { By } from '@angular/platform-browser';
+import { of } from 'rxjs';
 
 @Component({
   template: ''
@@ -28,7 +30,7 @@ describe('CreateComponent', () => {
 
   beforeEach(waitForAsync(() => {
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const mockItemService = jasmine.createSpyObj('ItemService', ['details', 'offer']);
+    const mockItemService = jasmine.createSpyObj('ItemService', ['details', 'offer', 'create']);
     const mockErrorService = jasmine.createSpyObj('ErrorService', ['cleanErrors', 'getError']);
 
     TestBed.configureTestingModule({
@@ -133,6 +135,7 @@ describe('CreateComponent', () => {
     htmlImg.dispatchEvent(new Event('input'))
 
     fixture.detectChanges()
+
     const img = component.createForm.get('imgUrl')
     expect(img?.value).toEqual('https://')
   })
@@ -140,7 +143,7 @@ describe('CreateComponent', () => {
   it('should bind price', () => {
     const price = component.createForm.get('price')
     const htmlPrice = fixture.nativeElement.querySelectorAll('input')[2]
-    
+
     price?.setValue('29')
     fixture.detectChanges()
 
@@ -166,7 +169,7 @@ describe('CreateComponent', () => {
     description?.setValue('some description')
 
     fixture.detectChanges()
-   
+
     expect(htmlDescription.value).toBe('some description')
   })
 
@@ -177,9 +180,62 @@ describe('CreateComponent', () => {
     htmlDescription.dispatchEvent(new Event('input'))
 
     fixture.detectChanges()
-    
+
     const description = component.createForm.get('description')
     expect(description?.value).toEqual('some description')
+  })
+
+  it('should call onSubmit', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const func = spyOn(component, 'onSubmit');
+
+    fixture.detectChanges();
+
+    form.triggerEventHandler('ngSubmit', null)
+
+    fixture.detectChanges();
+
+    expect(func).toHaveBeenCalled();
+  })
+
+  it('should call create when form event fire, then navigate', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const htmlDescription = fixture.nativeElement.querySelector('textarea')
+    const htmlPrice = fixture.nativeElement.querySelectorAll('input')[2]
+    const htmlImg = fixture.nativeElement.querySelectorAll('input')[1]
+    const htmlCategory = fixture.nativeElement.querySelector('select')
+    const htmlTitle = fixture.nativeElement.querySelectorAll('input')[0]
+    const page = new Page()
+
+    itemService.create.and.returnValue(of(true))
+    fixture.detectChanges()
+
+    htmlTitle.value = 'Title'
+    htmlTitle.dispatchEvent(new Event('input'))
+
+    htmlCategory.value = 'estate'
+    htmlCategory.dispatchEvent(new Event('change'))
+
+    htmlImg.value = 'https://'
+    htmlImg.dispatchEvent(new Event('input'))
+
+    htmlPrice.value = '26'
+    htmlPrice.dispatchEvent(new Event('input'))
+
+    htmlDescription.value = 'some description'
+    htmlDescription.dispatchEvent(new Event('input'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+    fixture.detectChanges()
+
+    const navArgs = page.navSpy.calls.first().args[0];
+
+    expect(itemService.create).toHaveBeenCalled()
+    expect(errorService.cleanErrors).toHaveBeenCalled()
+    expect(page.navSpy.calls.any()).withContext('navigate called').toBe(true);
+    expect(navArgs[0]).withContext('nav to Home URL').toContain('/item/catalog');
   })
 
   class Page {
