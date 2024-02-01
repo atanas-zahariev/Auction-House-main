@@ -92,4 +92,16 @@ describe('ItemsService', () => {
     request.flush(ITEM)
     expect(request.request.method).toBe('GET')
   })
+
+  it('should make offer()', () => {
+    const id = "64c7aa75212a04d09c7f31d4"
+    const data = {
+      price: '8320'
+    }
+
+    service.offer(id,data).subscribe()
+
+    const request = httpTestingController.expectOne(`${url}/details/${id}`)
+    expect(request.request.method).toBe('POST')
+  })
 });
