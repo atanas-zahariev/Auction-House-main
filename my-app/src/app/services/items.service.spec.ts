@@ -105,7 +105,7 @@ describe('ItemsService', () => {
     expect(request.request.method).toBe('POST')
   })
 
-  it('should close offer', () => {
+  it('should close the user offer', () => {
     const id = "64c7aa75212a04d09c7f31d4"
 
     service.closeOffer(id).subscribe()
@@ -123,5 +123,21 @@ describe('ItemsService', () => {
     const request = httpTestingController.expectOne(`${url}/closed`)
     request.flush(ITEMS)
     expect(request.request.method).toBe('GET')
+  })
+
+  it('should create new item', () => {
+    const item = {
+      title: 'new item',
+      category: 'other',
+      imgUrl: 'https://',
+      price: '25',
+      description: 'new item description'
+    }
+
+    service.create(item).subscribe()
+
+    const request = httpTestingController.expectOne(`${url}/create`)
+    
+    expect(request.request.method).toBe('POST')
   })
 });
