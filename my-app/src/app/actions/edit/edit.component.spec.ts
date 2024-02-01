@@ -10,7 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Location } from '@angular/common';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { By } from '@angular/platform-browser';
 
 describe('EditComponent', () => {
@@ -23,6 +23,18 @@ describe('EditComponent', () => {
   let location: Location;
   let activatedRoute: ActivatedRoute;
   let id: any
+
+  const ITEM = {
+    bider: null,
+    category: "vehicles",
+    description: 'some motorcycle description',
+    imgUrl: "https://",
+    owner: 'peter',
+    price: 8314,
+    title: "Motorcycle",
+    __v: 0,
+    _id: '1',
+  }
 
   beforeEach(waitForAsync(() => {
     const mockItemService = jasmine.createSpyObj('ItemService', ['details', 'offer', 'edit']);
@@ -41,7 +53,7 @@ describe('EditComponent', () => {
       providers: [
         { provide: ItemsService, useValue: mockItemService },
         { provide: ErrorService, useValue: mockErrorService },
-        { provide: ActivatedRoute, useValue: { snapshot: { params: { id: 1 } } } },
+        { provide: ActivatedRoute, useValue: { snapshot: { params: { id: ITEM._id } } } },
         { provide: Router, useValue: routerSpy },
       ],
 
@@ -68,17 +80,6 @@ describe('EditComponent', () => {
     fixture = TestBed.createComponent(EditComponent);
     component = fixture.componentInstance;
 
-    const ITEM = {
-      bider: null,
-      category: "vehicles",
-      description: 'some motorcycle description',
-      imgUrl: "https://",
-      owner: 'peter',
-      price: 8314,
-      title: "Motorcycle",
-      __v: 0,
-      _id: '1',
-    }
     component.editItem(ITEM);
     fixture.detectChanges();
   })
@@ -179,6 +180,112 @@ describe('EditComponent', () => {
     expect(itemService.edit).toHaveBeenCalled();
   })
 
+  it('should not to call edit when some input field is empti', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const title = fixture.nativeElement.querySelectorAll('input')[0]
+    const titleValue = ''
+
+    title.value = titleValue
+    title.dispatchEvent(new Event('input'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+
+    fixture.detectChanges();
+
+    expect(itemService.edit).not.toHaveBeenCalled()
+  })
+
+  it('should not to call edit when title input field length is loower than 4', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const title = fixture.nativeElement.querySelectorAll('input')[0]
+    const titleValue = 'abv'
+
+    title.value = titleValue
+    title.dispatchEvent(new Event('input'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+
+    fixture.detectChanges();
+
+    expect(itemService.edit).not.toHaveBeenCalled()
+  })
+
+  it('should not to call edit when category input field is different from expected', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const category = fixture.nativeElement.querySelector('select')
+
+    const categoryValue = 'different'
+
+    category.value = categoryValue
+    category.dispatchEvent(new Event('change'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+
+    fixture.detectChanges();
+
+    expect(itemService.edit).not.toHaveBeenCalled()
+  })
+
+  it('should not to call edit when image input field is different from expected', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const img = fixture.nativeElement.querySelectorAll('input')[1]
+
+    const imgValue = 'http//'
+
+    img.value = imgValue
+    img.dispatchEvent(new Event('input'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+
+    fixture.detectChanges();
+
+    expect(itemService.edit).not.toHaveBeenCalled()
+  })
+
+  it('should not to call edit when price input field is different from expected', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const price = fixture.nativeElement.querySelectorAll('input')[2]
+
+    const priceValue = '0'
+
+    price.value = priceValue
+    price.dispatchEvent(new Event('input'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+
+    fixture.detectChanges();
+
+    expect(itemService.edit).not.toHaveBeenCalled()
+  })
+
+  it('should not to call edit when description is different from expected', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const description = component.editForm.get('description')   
+
+    const descriptionValue = 
+    'akfejghkjasdhrgklandglkjasdhgjkahgkjahfsjkdghnakjfsngkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkjangjknajkngkjanskjgnakjsngkjnsdkfjgnjkndfgjknakjdfgnjkndfgkjanppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp'
+
+    description?.setValue(descriptionValue)
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+
+    fixture.detectChanges();
+
+    expect(itemService.edit).not.toHaveBeenCalled()
+  })
+
   it('should navigate after form event fire', () => {
     const form = fixture.debugElement.query(By.css('form'))
     const page = new Page()
@@ -195,6 +302,20 @@ describe('EditComponent', () => {
     expect(errorService.cleanErrors).toHaveBeenCalled()
     expect(page.navSpy.calls.any()).withContext('navigate called').toBe(true);
     expect(navArgs[0]).withContext('nav to Home URL').toContain('/action/details/1');
+  })
+
+  it('should call getError when error happens with edit', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    itemService.edit.and.returnValue(throwError(() => new Error()))
+
+    fixture.detectChanges();
+
+    form.triggerEventHandler('ngSubmit', null)
+
+    fixture.detectChanges();
+     
+    expect(itemService.edit).toHaveBeenCalledTimes(1)
+    expect(errorService.getError).toHaveBeenCalled()
   })
 
   class Page {
