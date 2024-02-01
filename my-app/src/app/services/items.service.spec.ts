@@ -113,4 +113,15 @@ describe('ItemsService', () => {
     const request = httpTestingController.expectOne(`${url}/userAction/${id}`)
     expect(request.request.method).toBe('GET')
   })
+
+  it('userClosedOfers() should return ITEMS', () => {
+    service.userClosedOffers().subscribe({
+      next: items => expect(items).toEqual(ITEMS),
+      error:fail
+    })
+
+    const request = httpTestingController.expectOne(`${url}/closed`)
+    request.flush(ITEMS)
+    expect(request.request.method).toBe('GET')
+  })
 });
