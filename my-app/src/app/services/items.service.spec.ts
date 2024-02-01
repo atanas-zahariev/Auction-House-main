@@ -137,7 +137,25 @@ describe('ItemsService', () => {
     service.create(item).subscribe()
 
     const request = httpTestingController.expectOne(`${url}/create`)
-    
+
+    expect(request.request.method).toBe('POST')
+  })
+
+  it('should edit existing item', () => {
+    const editedItem = {
+      category: "other",
+      description: "Clasik and beauty!",
+      imgUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Norton_Motorcycle.jpg/1200px-Norton_Motorcycle.jpg",
+      price: '8320',
+      title: "Motorcycle!!!",
+    }
+
+    const id = "64c7aa75212a04d09c7f31d4"
+
+    service.edit(editedItem,id).subscribe()
+
+    const request = httpTestingController.expectOne(`${url}/edit/${id}`)
+
     expect(request.request.method).toBe('POST')
   })
 });
