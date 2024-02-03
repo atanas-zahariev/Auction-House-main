@@ -181,8 +181,8 @@ describe('CreateComponent', () => {
 
     fixture.detectChanges()
 
-    const description = component.createForm.get('description')
-    expect(description?.value).toEqual('some description')
+    const description = component.createForm.get('description');
+    expect(description?.value).toEqual('some description');
   })
 
   it('should call onSubmit', () => {
@@ -266,11 +266,175 @@ describe('CreateComponent', () => {
 
     fixture.detectChanges()
 
-    form.triggerEventHandler('ngSubmit', null)
-    fixture.detectChanges()
+    form.triggerEventHandler('ngSubmit', null);
+    fixture.detectChanges();
 
     expect(itemService.create).toHaveBeenCalled()
     expect(errorService.getError).toHaveBeenCalled()
+  })
+
+  it('should not to call create when some input is empty', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    
+    form.triggerEventHandler('ngSubmit', null)
+    fixture.detectChanges()
+
+    expect(itemService.create).not.toHaveBeenCalled()
+  })
+
+  it('should not to call create if title lenght is lower than 4 characters', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const htmlDescription = fixture.nativeElement.querySelector('textarea')
+    const htmlPrice = fixture.nativeElement.querySelectorAll('input')[2]
+    const htmlImg = fixture.nativeElement.querySelectorAll('input')[1]
+    const htmlCategory = fixture.nativeElement.querySelector('select')
+    const htmlTitle = fixture.nativeElement.querySelectorAll('input')[0]
+
+    htmlTitle.value = 'Tit'
+    htmlTitle.dispatchEvent(new Event('input'))
+
+    htmlCategory.value = 'estate'
+    htmlCategory.dispatchEvent(new Event('change'))
+
+    htmlImg.value = 'https://'
+    htmlImg.dispatchEvent(new Event('input'))
+
+    htmlPrice.value = '26'
+    htmlPrice.dispatchEvent(new Event('input'))
+
+    htmlDescription.value = 'some description'
+    htmlDescription.dispatchEvent(new Event('input'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+    fixture.detectChanges()
+
+    expect(itemService.create).not.toHaveBeenCalled()    
+  })
+
+  it('should not to call create when category is different from expected ', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const htmlDescription = fixture.nativeElement.querySelector('textarea')
+    const htmlPrice = fixture.nativeElement.querySelectorAll('input')[2]
+    const htmlImg = fixture.nativeElement.querySelectorAll('input')[1]
+    const category = component.createForm.get('category')
+    const htmlTitle = fixture.nativeElement.querySelectorAll('input')[0]
+
+    htmlTitle.value = 'Title'
+    htmlTitle.dispatchEvent(new Event('input'))
+
+    category?.setValue('category')
+    fixture.detectChanges()
+
+    htmlImg.value = 'https://'
+    htmlImg.dispatchEvent(new Event('input'))
+
+    htmlPrice.value = '26'
+    htmlPrice.dispatchEvent(new Event('input'))
+
+    htmlDescription.value = 'some description'
+    htmlDescription.dispatchEvent(new Event('input'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+    fixture.detectChanges()
+
+    expect(itemService.create).not.toHaveBeenCalled()    
+  })
+
+  it('should not to call create when image is different from expected ', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const htmlDescription = fixture.nativeElement.querySelector('textarea')
+    const htmlPrice = fixture.nativeElement.querySelectorAll('input')[2]
+    const htmlImg = fixture.nativeElement.querySelectorAll('input')[1]
+    const category = component.createForm.get('category')
+    const htmlTitle = fixture.nativeElement.querySelectorAll('input')[0]
+
+    htmlTitle.value = 'Title'
+    htmlTitle.dispatchEvent(new Event('input'))
+
+    category?.setValue('estate')
+    fixture.detectChanges()
+
+    htmlImg.value = 'https//'
+    htmlImg.dispatchEvent(new Event('input'))
+
+    htmlPrice.value = '26'
+    htmlPrice.dispatchEvent(new Event('input'))
+
+    htmlDescription.value = 'some description'
+    htmlDescription.dispatchEvent(new Event('input'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+    fixture.detectChanges()
+
+    expect(itemService.create).not.toHaveBeenCalled()        
+  })
+
+  it('should not to call create when price is wrong', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const htmlDescription = fixture.nativeElement.querySelector('textarea')
+    const price = component.createForm.get('price')
+    const htmlImg = fixture.nativeElement.querySelectorAll('input')[1]
+    const category = component.createForm.get('category')
+    const htmlTitle = fixture.nativeElement.querySelectorAll('input')[0]
+
+    htmlTitle.value = 'Title'
+    htmlTitle.dispatchEvent(new Event('input'))
+
+    category?.setValue('estate')
+    fixture.detectChanges()
+
+    htmlImg.value = 'https://'
+    htmlImg.dispatchEvent(new Event('input'))
+
+    price?.setValue('-1')
+    fixture.detectChanges()
+
+    htmlDescription.value = 'some description'
+    htmlDescription.dispatchEvent(new Event('input'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+    fixture.detectChanges()
+
+    expect(itemService.create).not.toHaveBeenCalled()      
+  })
+
+  it('should not to call create when description is biger from allowed', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const htmlDescription = fixture.nativeElement.querySelector('textarea')
+    const htmlPrice = fixture.nativeElement.querySelectorAll('input')[2]
+    const htmlImg = fixture.nativeElement.querySelectorAll('input')[1]
+    const category = component.createForm.get('category')
+    const htmlTitle = fixture.nativeElement.querySelectorAll('input')[0]
+
+    htmlTitle.value = 'Title'
+    htmlTitle.dispatchEvent(new Event('input'))
+
+    category?.setValue('estate')
+    fixture.detectChanges()
+
+    htmlImg.value = 'https://'
+    htmlImg.dispatchEvent(new Event('input'))
+
+    htmlPrice.value = '26'
+    htmlPrice.dispatchEvent(new Event('input'))
+
+    htmlDescription.value = 'akfejghkjasdhrgklandglkjasdhgjkahgkjahfsjkdghnakjfsngkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkjangjknajkngkjanskjgnakjsngkjnsdkfjgnjkndfgjknakjdfgnjkndfgkjanppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp'
+    htmlDescription.dispatchEvent(new Event('input'))
+
+    fixture.detectChanges()
+
+    form.triggerEventHandler('ngSubmit', null)
+    fixture.detectChanges()
+
+    expect(itemService.create).not.toHaveBeenCalled()      
   })
 
   class Page {
