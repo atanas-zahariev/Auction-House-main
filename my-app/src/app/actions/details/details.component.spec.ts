@@ -113,6 +113,34 @@ describe('DetailsComponent', () => {
     expect(errorService.getError).toHaveBeenCalled()
   })
 
+  it('should render not owner template with user', () => {
+    const data = {
+      item : {
+        bider: null,
+        category: "vehicles",
+        description: 'some motorcycle description',
+        imgUrl: "https://",
+        owner: 'peter',
+        price: 8314,
+        title: "Motorcycle",
+        __v: 0,
+        _id: '1',
+      },
+      user:{
+        username:'koicho',
+        _id: '15987'
+      }
+    };
+
+    itemService.details.and.returnValue(of(data));
+
+    fixture = TestBed.createComponent(DetailsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(itemService.details).toHaveBeenCalled();
+  })
+
   it('should render notOwner template without user', () => {
     component.userFirstName = 'Peter'
     fixture.detectChanges();
@@ -244,6 +272,31 @@ describe('DetailsComponent', () => {
 
     expect(itemService.offer).toHaveBeenCalled()
     expect(errorService.cleanErrors).toHaveBeenCalled()
+  }))
+
+  it('should call getError after offer() call', fakeAsync(() => {
+    component.user = true;
+    component.userFirstName = 'Peter'
+    fixture.detectChanges();
+
+    const priceInput = fixture.nativeElement.querySelectorAll('form input')[0]
+    const form = fixture.debugElement.query(By.css('form'))
+    const priceInputValue = '8320'
+
+    itemService.offer.and.returnValue(throwError(() => new Error()))
+
+    priceInput.value = priceInputValue
+    priceInput.dispatchEvent(new Event('input'))
+    tick()
+    fixture.detectChanges()
+
+
+    form.triggerEventHandler('ngSubmit', null)
+    tick()
+    fixture.detectChanges();
+
+    expect(itemService.offer).toHaveBeenCalled()
+    expect(errorService.getError).toHaveBeenCalled()
   }))
 
   it('should not to call offer after form event fire with lower price', fakeAsync(() => {
