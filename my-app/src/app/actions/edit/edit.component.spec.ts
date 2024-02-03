@@ -216,12 +216,11 @@ describe('EditComponent', () => {
 
   it('should not to call edit when category input field is different from expected', () => {
     const form = fixture.debugElement.query(By.css('form'))
-    const category = fixture.nativeElement.querySelector('select')
+    const category = component.editForm.get('category')
 
     const categoryValue = 'different'
 
-    category.value = categoryValue
-    category.dispatchEvent(new Event('change'))
+    category?.setValue('different')
 
     fixture.detectChanges()
 
@@ -254,7 +253,7 @@ describe('EditComponent', () => {
     const form = fixture.debugElement.query(By.css('form'))
     const price = fixture.nativeElement.querySelectorAll('input')[2]
 
-    const priceValue = '0'
+    const priceValue = '-1'
 
     price.value = priceValue
     price.dispatchEvent(new Event('input'))
@@ -270,10 +269,10 @@ describe('EditComponent', () => {
 
   it('should not to call edit when description is different from expected', () => {
     const form = fixture.debugElement.query(By.css('form'))
-    const description = component.editForm.get('description')   
+    const description = component.editForm.get('description')
 
-    const descriptionValue = 
-    'akfejghkjasdhrgklandglkjasdhgjkahgkjahfsjkdghnakjfsngkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkjangjknajkngkjanskjgnakjsngkjnsdkfjgnjkndfgjknakjdfgnjkndfgkjanppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp'
+    const descriptionValue =
+      'akfejghkjasdhrgklandglkjasdhgjkahgkjahfsjkdghnakjfsngkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkjangjknajkngkjanskjgnakjsngkjnsdkfjgnjkndfgjknakjdfgnjkndfgkjanppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp'
 
     description?.setValue(descriptionValue)
 
@@ -298,7 +297,7 @@ describe('EditComponent', () => {
     fixture.detectChanges();
 
     const navArgs = page.navSpy.calls.first().args[0];
-    
+
     expect(errorService.cleanErrors).toHaveBeenCalled()
     expect(page.navSpy.calls.any()).withContext('navigate called').toBe(true);
     expect(navArgs[0]).withContext('nav to Home URL').toContain('/action/details/1');
@@ -313,7 +312,7 @@ describe('EditComponent', () => {
     form.triggerEventHandler('ngSubmit', null)
 
     fixture.detectChanges();
-     
+
     expect(itemService.edit).toHaveBeenCalledTimes(1)
     expect(errorService.getError).toHaveBeenCalled()
   })

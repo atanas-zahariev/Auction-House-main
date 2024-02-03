@@ -239,6 +239,141 @@ describe('RegisterComponent', () => {
     expect(errorService.getError).toHaveBeenCalled()
   })
 
+  it('should not to call register when email is wrong', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const email: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[0];
+    const firstName: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[1];
+    const lastName: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[2];
+    const password: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[3];
+    const repass: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[4];
+
+    email.value = 'edyabv.bg';
+    firstName.value = 'edy';
+    lastName.value = 'koisi';
+    password.value = '123456';
+    repass.value = '123456';
+
+    email.dispatchEvent(new Event('input'));
+    firstName.dispatchEvent(new Event('input'));
+    lastName.dispatchEvent(new Event('input'));
+    password.dispatchEvent(new Event('input'));
+    repass.dispatchEvent(new Event('input'));
+
+    fixture.detectChanges();
+    form.triggerEventHandler('ngSubmit', null);
+    fixture.detectChanges()
+    
+    expect(authService.register).not.toHaveBeenCalled()
+  })
+
+  it('should not to call register when first name length is loower than 2 characters', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const email: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[0];
+    const firstName: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[1];
+    const lastName: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[2];
+    const password: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[3];
+    const repass: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[4];
+
+    email.value = 'edy@abv.bg';
+    firstName.value = 'e';
+    lastName.value = 'koisi';
+    password.value = '123456';
+    repass.value = '123456';
+
+    email.dispatchEvent(new Event('input'));
+    firstName.dispatchEvent(new Event('input'));
+    lastName.dispatchEvent(new Event('input'));
+    password.dispatchEvent(new Event('input'));
+    repass.dispatchEvent(new Event('input'));
+
+    fixture.detectChanges();
+    form.triggerEventHandler('ngSubmit', null);
+    fixture.detectChanges()
+    
+    expect(authService.register).not.toHaveBeenCalled()
+  })
+
+  it('should not to call register when last name is loower than 2 characters', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const email: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[0];
+    const firstName: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[1];
+    const lastName: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[2];
+    const password: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[3];
+    const repass: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[4];
+
+    email.value = 'edy@abv.bg';
+    firstName.value = 'edy';
+    lastName.value = 'k';
+    password.value = '123456';
+    repass.value = '123456';
+
+    email.dispatchEvent(new Event('input'));
+    firstName.dispatchEvent(new Event('input'));
+    lastName.dispatchEvent(new Event('input'));
+    password.dispatchEvent(new Event('input'));
+    repass.dispatchEvent(new Event('input'));
+
+    fixture.detectChanges();
+    form.triggerEventHandler('ngSubmit', null);
+    fixture.detectChanges()
+    
+    expect(authService.register).not.toHaveBeenCalled()
+  })
+
+  it('should not to call register when password is loower than 5 characters', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const email: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[0];
+    const firstName: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[1];
+    const lastName: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[2];
+    const password: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[3];
+    const repass: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[4];
+
+    email.value = 'edy@abv.bg';
+    firstName.value = 'edy';
+    lastName.value = 'koisi';
+    password.value = '1234';
+    repass.value = '1234';
+
+    email.dispatchEvent(new Event('input'));
+    firstName.dispatchEvent(new Event('input'));
+    lastName.dispatchEvent(new Event('input'));
+    password.dispatchEvent(new Event('input'));
+    repass.dispatchEvent(new Event('input'));
+
+    fixture.detectChanges();
+    form.triggerEventHandler('ngSubmit', null);
+    fixture.detectChanges()
+    
+    expect(authService.register).not.toHaveBeenCalled()
+  })
+
+  it('should not to call register when repass is different from password', () => {
+    const form = fixture.debugElement.query(By.css('form'))
+    const email: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[0];
+    const firstName: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[1];
+    const lastName: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[2];
+    const password: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[3];
+    const repass: HTMLInputElement = fixture.nativeElement.querySelectorAll('input')[4];
+
+    email.value = 'edy@abv.bg';
+    firstName.value = 'edy';
+    lastName.value = 'koisi';
+    password.value = '123456';
+    repass.value = '12345';
+
+    email.dispatchEvent(new Event('input'));
+    firstName.dispatchEvent(new Event('input'));
+    lastName.dispatchEvent(new Event('input'));
+    password.dispatchEvent(new Event('input'));
+    repass.dispatchEvent(new Event('input'));
+
+    fixture.detectChanges();
+    form.triggerEventHandler('ngSubmit', null);
+    fixture.detectChanges()
+    
+    expect(authService.register).not.toHaveBeenCalled()
+  })
+
   ///Helper
   class Page {
     /** Spy on router navigate method */
