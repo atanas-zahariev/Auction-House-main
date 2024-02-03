@@ -1,15 +1,14 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+
+import { HttpClient } from '@angular/common/http';
+import { Location } from '@angular/common';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { CloseOfferComponent } from './close-offer.component';
-import { HttpClient, HttpClientModule, HttpHandler } from '@angular/common/http';
-import { Location } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { ItemsService } from 'src/app/services/items.service';
 import { ErrorService } from 'src/app/services/error.service';
-import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ReactiveFormsModule } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 
 
@@ -72,8 +71,8 @@ describe('CloseOfferComponent', () => {
   })
 
   it('should create and navigate', () => {
-    fixture.detectChanges
     expect(component).toBeTruthy();
+    expect(router.navigate).toHaveBeenCalled()
   });
 
   it('should call getError', () => {
