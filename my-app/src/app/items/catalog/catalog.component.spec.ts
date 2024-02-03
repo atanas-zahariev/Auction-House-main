@@ -84,6 +84,43 @@ describe('CatalogComponent', () => {
     expect(itemService.catalog).toHaveBeenCalled()
   });
 
+  it('should call catalog()', () => {
+    const  data = {
+      items:  [
+        {
+          bider: null,
+          category: "vehicles",
+          description: 'some motorcycle description',
+          imgUrl: "https://",
+          owner: 'peter',
+          price: 8314,
+          title: "Motorcycle",
+          __v: 0,
+          _id: '1',
+        },
+        {
+          bider: null,
+          category: "other",
+          description: 'some horse description',
+          imgUrl: "https://",
+          owner: 'gosho',
+          price: 8314,
+          title: "Horse",
+          __v: 0,
+          _id: '1',
+        }
+      ]
+    }
+
+    itemService.catalog.and.returnValue(of(data))
+
+    fixture = TestBed.createComponent(CatalogComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(itemService.catalog).toHaveBeenCalled()
+  })
+
   it('check for initial elements', () => {
     const section = fixture.nativeElement.querySelector('#catalog-section')
     const div = fixture.nativeElement.querySelector('.item.pad-large.align-center')
