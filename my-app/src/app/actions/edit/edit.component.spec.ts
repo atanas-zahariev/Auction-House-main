@@ -88,6 +88,48 @@ describe('EditComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should create component with bider', () => {
+    const data = {
+     item:{
+      bider: {
+        email: 'gosho@abv.bg',
+        firstname: 'gosho',
+        hashedPassword: 'string',
+        lastname: 'goshev',
+        __v: 0,
+        _id: '2',
+      },
+      category: "vehicles",
+      description: 'some motorcycle description',
+      imgUrl: "https://",
+      owner: 'peter',
+      price: 8314,
+      title: "Motorcycle",
+      __v: 0,
+      _id: '1',
+     }
+    }
+
+    itemService.details.and.returnValue(of(data))
+
+    fixture = TestBed.createComponent(EditComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(itemService.details).toHaveBeenCalled()
+  })
+
+  it('should call getError upon creation', () =>{
+    itemService.details.and.returnValue(throwError(() => new Error()))
+
+    fixture = TestBed.createComponent(EditComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(itemService.details).toHaveBeenCalled()
+    expect(errorService.getError).toHaveBeenCalled()
+  })
+
   it('should be right properties value to editForm', () => {
     const title = component.editForm.get('title')
     const img = component.editForm.get('imgUrl')
