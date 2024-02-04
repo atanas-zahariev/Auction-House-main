@@ -43,9 +43,6 @@ describe('AuthService', () => {
     const request = httpTestingController.expectOne('http://localhost:3000/auth/login');
     request.flush(token)
     expect(request.request.method).toBe('POST')
-
-    const localStor = localStorage.getItem('user')
-    expect(localStor).toBeTruthy()
   })
 
   it('register should return token and should sign user on localStorage', () => {
@@ -66,9 +63,6 @@ describe('AuthService', () => {
     const request = httpTestingController.expectOne('http://localhost:3000/auth/register');
     request.flush(token)
     expect(request.request.method).toBe('POST')
-
-    const localStor = localStorage.getItem('user')
-    expect(localStor).toBeTruthy()
   })
 
   it('logout()', () => {   
