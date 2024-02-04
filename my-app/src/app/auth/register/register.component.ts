@@ -62,7 +62,7 @@ export class RegisterComponent {
       }
     }
 
-    if(password || repass){
+    if(password && repass){
       if(password != repass){
         this.errorService.Error = ['The passwords do not match!']
         return
